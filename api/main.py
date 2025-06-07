@@ -24,7 +24,8 @@ template_mcp = FastApiMCP(
     name="Template MCP",
     exclude_operations=["health","list_templates","update_template", "delete_template"]
 )
-template_mcp.mount(mount_path="/template")
+# 修改为/api路径下的挂载点
+template_mcp.mount(mount_path="/mcp/template")
 
 @app.on_event("startup")
 def startup():
