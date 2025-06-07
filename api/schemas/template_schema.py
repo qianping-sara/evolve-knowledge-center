@@ -7,8 +7,8 @@ class TemplateBase(BaseModel):
     description: str
     content: str
     tags: List[str]
-    version: str
-    createdBy: str
+    version: Optional[str] = None
+    createdBy: Optional[str] = None
 
 class TemplateCreate(TemplateBase):
     pass
@@ -17,6 +17,8 @@ class TemplateRead(TemplateBase):
     id: str
     createdAt: datetime
     updatedAt: datetime
+    version: str
+    createdBy: str
     
     class Config:
         from_attributes = True  # 允许从ORM模型创建 

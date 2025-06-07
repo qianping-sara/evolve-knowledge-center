@@ -13,21 +13,36 @@ logger = logging.getLogger(__name__)
 Base = declarative_base()
 
 def get_database_url():
-    # 确保使用绝对路径创建SQLite数据库文件
+    # 首先检查环境变量中是否有DATABASE_URL
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        # 如果URL以postgres://开头，转换为postgresql://
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        logger.info(f"使用环境变量中的数据库URL")
+        return db_url
+    
+    # 如果环境变量中没有，则使用SQLite作为备选
     base_dir = pathlib.Path(__file__).parent.parent.absolute()
     db_path = os.path.join(base_dir, "app.db")
-    logger.info(f"数据库路径: {db_path}")
+    logger.info(f"未找到环境变量中的数据库URL，使用SQLite: {db_path}")
     return f"sqlite:///{db_path}"
 
+# 加载环境变量
 load_dotenv()
 DATABASE_URL = get_database_url()
-logger.info(f"使用数据库URL: {DATABASE_URL}")
+logger.info(f"最终使用的数据库URL: {DATABASE_URL}")
+
+# 根据数据库类型设置不同的连接参数
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
 
 # 创建同步引擎
 engine = create_engine(
     DATABASE_URL, 
     echo=True,
-    connect_args={"check_same_thread": False}  # 仅用于SQLite
+    connect_args=connect_args
 )
 
 # 创建会话工厂

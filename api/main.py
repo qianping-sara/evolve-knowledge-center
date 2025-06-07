@@ -15,11 +15,18 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Template API", description="API for Template model", version="0.1.0")
 
-# 添加MCP服务器
-add_mcp_server(app, mount_path="/mcp", serve_tools=True)
-
 # 添加路由
 app.include_router(template_router)
+
+# 添加MCP服务器，简单配置
+# fastapi_mcp 0.1.6版本支持的参数较少
+add_mcp_server(
+    app, 
+    mount_path="/mcp", 
+    serve_tools=True,
+    exclude_paths=["/health"],
+    exclude_operations=["delete_template", "update_template"]
+)
 
 @app.on_event("startup")
 def startup():
