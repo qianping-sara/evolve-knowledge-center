@@ -13,6 +13,7 @@
 
 ### 1. 安装依赖
 ```bash
+python3 -m venv venv
 pip install -r requirements.txt
 ```
 
