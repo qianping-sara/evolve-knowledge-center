@@ -25,7 +25,7 @@ template_mcp = FastApiMCP(
     include_operations=["create_template", "search_templates", "list_templates"]
 )
 # 修改为正确的挂载点，添加前导斜杠
-template_mcp.mount(mount_path="/template")
+template_mcp.mount(mount_path="/mcp/template")
 
 @app.on_event("startup")
 def startup():
