@@ -4,5 +4,4 @@ SQLAlchemy==2.0.30
 python-dotenv==1.0.1
 fastapi_mcp==0.1.6
 alembic==1.13.1
-aiosqlite==0.21.0
-greenlet==3.0.3 
+pydantic==2.11.5 

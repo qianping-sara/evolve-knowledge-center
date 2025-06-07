@@ -23,6 +23,7 @@ wheels/
 # 虚拟环境
 venv/
 .env
+.venv/
 
 # IDE
 .idea/

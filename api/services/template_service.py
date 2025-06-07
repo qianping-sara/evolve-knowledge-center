@@ -5,34 +5,45 @@ from api.repositories.template_repository import TemplateRepository
 
 class TemplateService:
     @staticmethod
-    async def create_template(db, data: TemplateCreate):
+    def create_template(db, data: TemplateCreate):
+        # 将Pydantic模型转换为字典，并确保tags列表被正确处理
+        data_dict = data.dict()
+        
+        # 创建新的Template实例
         obj = Template(
             id=str(uuid.uuid4()),
-            **data.dict()
+            **data_dict
         )
-        return await TemplateRepository.create(db, obj)
+        
+        return TemplateRepository.create(db, obj)
 
     @staticmethod
-    async def get_template(db, template_id: str):
-        return await TemplateRepository.get(db, template_id)
+    def get_template(db, template_id: str):
+        return TemplateRepository.get(db, template_id)
 
     @staticmethod
-    async def list_templates(db):
-        return await TemplateRepository.list(db)
+    def list_templates(db):
+        return TemplateRepository.list(db)
 
     @staticmethod
-    async def update_template(db, template_id: str, data: TemplateCreate):
-        obj = await TemplateRepository.get(db, template_id)
+    def update_template(db, template_id: str, data: TemplateCreate):
+        obj = TemplateRepository.get(db, template_id)
         if not obj:
             return None
-        for k, v in data.dict().items():
+            
+        # 将Pydantic模型转换为字典
+        data_dict = data.dict()
+        
+        # 更新属性
+        for k, v in data_dict.items():
             setattr(obj, k, v)
-        return await TemplateRepository.update(db, obj)
+            
+        return TemplateRepository.update(db, obj)
 
     @staticmethod
-    async def delete_template(db, template_id: str):
-        obj = await TemplateRepository.get(db, template_id)
+    def delete_template(db, template_id: str):
+        obj = TemplateRepository.get(db, template_id)
         if not obj:
             return None
-        await TemplateRepository.delete(db, obj)
+        TemplateRepository.delete(db, obj)
         return True 

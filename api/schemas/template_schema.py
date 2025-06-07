@@ -1,8 +1,8 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from datetime import datetime
 
-class TemplateCreate(BaseModel):
+class TemplateBase(BaseModel):
     name: str
     description: str
     content: str
@@ -10,7 +10,13 @@ class TemplateCreate(BaseModel):
     version: str
     createdBy: str
 
-class TemplateRead(TemplateCreate):
+class TemplateCreate(TemplateBase):
+    pass
+
+class TemplateRead(TemplateBase):
     id: str
     createdAt: datetime
-    updatedAt: datetime 
+    updatedAt: datetime
+    
+    class Config:
+        from_attributes = True  # 允许从ORM模型创建 

@@ -1,9 +1,7 @@
 from sqlalchemy import Column, String, DateTime, Text
-from sqlalchemy.orm import declarative_base
 from datetime import datetime
 import json
-
-Base = declarative_base()
+from api.database import Base
 
 class Template(Base):
     __tablename__ = 'template'

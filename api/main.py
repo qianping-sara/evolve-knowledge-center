@@ -1,20 +1,35 @@
 import os
+import logging
 from fastapi import FastAPI
 from fastapi_mcp import add_mcp_server
-from api.models.template_model import Base
+from api.models.template_model import Template
 from api.routers.template_router import router as template_router
-from api.database import engine
+from api.database import init_db
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Template API", description="API for Template model", version="0.1.0")
 
+# 添加MCP服务器
 add_mcp_server(app, mount_path="/mcp", serve_tools=True)
 
+# 添加路由
 app.include_router(template_router)
 
 @app.on_event("startup")
-async def startup():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def startup():
+    logger.info("应用程序启动中...")
+    try:
+        # 初始化数据库
+        init_db()
+        logger.info("数据库初始化完成")
+    except Exception as e:
+        logger.error(f"启动失败: {str(e)}", exc_info=True)
 
 @app.get("/health")
 async def health():
