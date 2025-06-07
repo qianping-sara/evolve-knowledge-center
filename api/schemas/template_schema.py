@@ -22,3 +22,11 @@ class TemplateRead(TemplateBase):
     
     class Config:
         from_attributes = True  # 允许从ORM模型创建 
+        
+class TemplatePagination(BaseModel):
+    """分页搜索结果"""
+    items: List[TemplateRead]
+    total: int
+    limit: int
+    skip: int
+    keyword: str

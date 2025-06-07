@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, func
 from api.models.template_model import Template
 import json
 import logging
@@ -37,6 +38,47 @@ class TemplateRepository:
             return [TemplateRepository._process_tags(obj) for obj in objs]
         except Exception as e:
             logger.error(f"获取模板列表失败: {str(e)}", exc_info=True)
+            raise
+            
+    @staticmethod
+    def search(db: Session, keyword: str, skip: int = 0, limit: int = 10):
+        """
+        根据关键词搜索模板
+        
+        Args:
+            db: 数据库会话
+            keyword: 搜索关键词
+            skip: 跳过的结果数量（用于分页）
+            limit: 返回的最大结果数量（用于分页）
+            
+        Returns:
+            匹配的模板列表和总数
+        """
+        try:
+            # 构建LIKE模式匹配
+            pattern = f"%{keyword}%"
+            
+            # 查询匹配的记录
+            query = db.query(Template).filter(
+                or_(
+                    Template.name.ilike(pattern),       # 模糊匹配name
+                    Template.description.ilike(pattern),# 模糊匹配description
+                    Template.tags.ilike(pattern)        # 模糊匹配tags（注意这是JSON字符串）
+                )
+            )
+            
+            # 获取总数（用于分页信息）
+            total = query.count()
+            
+            # 应用分页
+            results = query.offset(skip).limit(limit).all()
+            
+            # 处理结果
+            processed_results = [TemplateRepository._process_tags(obj) for obj in results]
+            
+            return processed_results, total
+        except Exception as e:
+            logger.error(f"搜索模板失败: {str(e)}", exc_info=True)
             raise
 
     @staticmethod

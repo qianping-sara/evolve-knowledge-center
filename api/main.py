@@ -1,7 +1,7 @@
 import os
 import logging
 from fastapi import FastAPI
-from fastapi_mcp import add_mcp_server
+from fastapi_mcp import FastApiMCP
 from api.models.template_model import Template
 from api.routers.template_router import router as template_router
 from api.database import init_db
@@ -15,17 +15,16 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Template API", description="API for Template model", version="0.1.0")
 
-# 添加路由
-app.include_router(template_router)
+# 添加路由 - 添加v1前缀
+app.include_router(template_router, prefix="/v1")
 
 # 添加MCP服务器，自动封装模板相关接口
-add_mcp_server(
-    app, 
-    mount_path="/mcp", 
-    serve_tools=True,
-    exclude_paths=["/health"],
-    exclude_operations=["update_template", "delete_template"]
+template_mcp = FastApiMCP(
+    app,    
+    name="Template MCP",
+    exclude_operations=["health","list_templates","update_template", "delete_template"]
 )
+template_mcp.mount(mount_path="/template")
 
 @app.on_event("startup")
 def startup():
@@ -37,6 +36,6 @@ def startup():
     except Exception as e:
         logger.error(f"启动失败: {str(e)}", exc_info=True)
 
-@app.get("/health")
+@app.get("/health",operation_id="health")
 async def health():
     return {"status": "ok"} 

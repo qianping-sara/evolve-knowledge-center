@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from api.schemas.template_schema import TemplateCreate, TemplateRead
+from api.schemas.template_schema import TemplateCreate, TemplateRead, TemplatePagination
 from api.services.template_service import TemplateService
 from api.database import get_db
-from typing import List
+from typing import List, Optional
 import logging
 
 # 配置日志
@@ -27,6 +27,31 @@ def list_templates(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"获取模板列表失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取模板列表失败: {str(e)}")
+
+@router.get("/search", response_model=TemplatePagination, operation_id="search_templates")
+def search_templates(
+    keyword: str = Query(..., description="搜索关键词"),
+    skip: int = Query(0, description="跳过的结果数量", ge=0),
+    limit: int = Query(10, description="返回的最大结果数量", ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """
+    搜索模板
+    
+    根据关键词搜索模板，支持对名称、描述和标签进行模糊匹配
+    """
+    try:
+        templates, total = TemplateService.search_templates(db, keyword, skip, limit)
+        return {
+            "items": templates,
+            "total": total,
+            "limit": limit,
+            "skip": skip,
+            "keyword": keyword
+        }
+    except Exception as e:
+        logger.error(f"搜索模板失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"搜索模板失败: {str(e)}")
 
 @router.get("/{template_id}", response_model=TemplateRead, operation_id="get_template_by_id")
 def get_template(template_id: str, db: Session = Depends(get_db)):

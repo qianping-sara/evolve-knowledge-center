@@ -2,6 +2,7 @@ import uuid
 from api.models.template_model import Template
 from api.schemas.template_schema import TemplateCreate
 from api.repositories.template_repository import TemplateRepository
+from typing import Tuple, List, Optional
 
 class TemplateService:
     @staticmethod
@@ -24,6 +25,22 @@ class TemplateService:
     @staticmethod
     def list_templates(db):
         return TemplateRepository.list(db)
+        
+    @staticmethod
+    def search_templates(db, keyword: str, skip: int = 0, limit: int = 10) -> Tuple[List[Template], int]:
+        """
+        搜索模板
+        
+        Args:
+            db: 数据库会话
+            keyword: 搜索关键词
+            skip: 跳过的结果数量（用于分页）
+            limit: 返回的最大结果数量（用于分页）
+            
+        Returns:
+            Tuple[List[Template], int]: 匹配的模板列表和总数
+        """
+        return TemplateRepository.search(db, keyword, skip, limit)
 
     @staticmethod
     def update_template(db, template_id: str, data: TemplateCreate):
