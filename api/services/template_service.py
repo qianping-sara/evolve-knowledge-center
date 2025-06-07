@@ -27,7 +27,7 @@ class TemplateService:
         return TemplateRepository.list(db)
         
     @staticmethod
-    def search_templates(db, keyword: str, skip: int = 0, limit: int = 10) -> Tuple[List[Template], int]:
+    def search_templates(db, keyword: str, skip: int = 0, limit: int = 20) -> Tuple[List[Template], int]:
         """
         搜索模板
         
@@ -35,7 +35,7 @@ class TemplateService:
             db: 数据库会话
             keyword: 搜索关键词
             skip: 跳过的结果数量（用于分页）
-            limit: 返回的最大结果数量（用于分页）
+            limit: 返回的最大结果数量（用于分页），默认20条
             
         Returns:
             Tuple[List[Template], int]: 匹配的模板列表和总数

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, desc
 from api.models.template_model import Template
 import json
 import logging
@@ -41,7 +41,7 @@ class TemplateRepository:
             raise
             
     @staticmethod
-    def search(db: Session, keyword: str, skip: int = 0, limit: int = 10):
+    def search(db: Session, keyword: str, skip: int = 0, limit: int = 20):
         """
         根据关键词搜索模板
         
@@ -49,7 +49,7 @@ class TemplateRepository:
             db: 数据库会话
             keyword: 搜索关键词
             skip: 跳过的结果数量（用于分页）
-            limit: 返回的最大结果数量（用于分页）
+            limit: 返回的最大结果数量（用于分页），默认20条
             
         Returns:
             匹配的模板列表和总数
@@ -66,6 +66,9 @@ class TemplateRepository:
                     Template.tags.ilike(pattern)        # 模糊匹配tags（注意这是JSON字符串）
                 )
             )
+            
+            # 按更新时间倒序排序，最新的先返回
+            query = query.order_by(desc(Template.updatedAt))
             
             # 获取总数（用于分页信息）
             total = query.count()

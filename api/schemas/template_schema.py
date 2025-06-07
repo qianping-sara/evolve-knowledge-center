@@ -11,7 +11,8 @@ class TemplateBase(BaseModel):
     createdBy: Optional[str] = None
 
 class TemplateCreate(TemplateBase):
-    pass
+    # 重写createdBy，使其在创建时成为必填字段
+    createdBy: str
 
 class TemplateRead(TemplateBase):
     id: str

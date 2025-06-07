@@ -32,7 +32,7 @@ def list_templates(db: Session = Depends(get_db)):
 def search_templates(
     keyword: str = Query(..., description="搜索关键词"),
     skip: int = Query(0, description="跳过的结果数量", ge=0),
-    limit: int = Query(10, description="返回的最大结果数量", ge=1, le=100),
+    limit: int = Query(20, description="返回的最大结果数量", ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     """

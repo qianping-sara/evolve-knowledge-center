@@ -22,10 +22,10 @@ app.include_router(template_router, prefix="/v1")
 template_mcp = FastApiMCP(
     app,    
     name="Template MCP",
-    exclude_operations=["health","list_templates","update_template", "delete_template"]
+    include_operations=["create_template", "search_templates", "list_templates"]
 )
 # 修改为/api路径下的挂载点
-template_mcp.mount(mount_path="/mcp/template")
+template_mcp.mount(mount_path="template")
 
 @app.on_event("startup")
 def startup():
